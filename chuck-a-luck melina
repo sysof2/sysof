@@ -1,0 +1,117 @@
+#include <stdlib.h> 
+
+#include <stdio.h>
+
+
+int main(){
+
+	puts("Willkommen");
+
+	puts("Sie haben 1000 Geldeinheiten.");
+
+	puts("In jeder Runde koennen Sie einen Teil davon auf eine der Zahlen 
+	1 bis 6 setzen. Danach werden 3 Wuerfel geworfen. Falls Ihr Wert dabei 
+	ist, erhalten Sie Ihren Einsatz zurueck und zusaetzlich Ihren Einsatz 
+	fuer jeden Wuerfel, der die von ihnen gesetzte Zahl zeigt.");
+
+
+	
+	int topf = 1000;
+
+
+	while(topf != 0){
+
+
+		printf("Sie haben %d Geldeinheiten\n", topf);
+
+		puts("Ihr Einsatz:");
+
+		int x;
+
+		scanf("%d", &x);
+
+		topf = topf - x;
+
+		if(topf < 0 || x==0){
+
+			puts("Sie haben zu wenig Geldeinheiten fü Ihren Einsatz. 
+			Das Spiel wird beendet");
+
+			printf("Sie verlassen das Spiel mit %d Geldeinheiten.\n", topf+x);
+
+			return 0;
+
+		}
+
+		printf("Sie haben %d  Geldeinheiten\n", topf);
+
+		puts("Ihre Zahl:");
+
+		int zahl;
+
+		scanf("%d", &zahl);
+
+	
+	
+		if(zahl != (1 || 2 || 3 || 4 || 5 || 6)){
+
+			puts("Sie haben eine falsche Eingabe gemacht. Das Spiel wird beendet.");
+
+			return 0;
+
+		}
+
+
+
+		 int zufall1 = rand() %6 +1;
+
+		 int zufall2 = rand() %6 +1;
+
+		 int zufall3 = rand() %6 +1;
+
+
+		printf("Die Würfel sind gefallen %d, %d ,%d\n", zufall1, zufall2, zufall3);
+
+	
+	
+		if((zufall1 != zahl) && (zufall2 != zahl) && (zufall3 != zahl)){
+
+			puts("Schade, da war wohl nichts fürSie dabei");
+
+		}else{
+
+			int gewinn = x;
+
+			if(zufall1 == zahl){
+
+				gewinn = gewinn +x;
+
+			}
+
+			if(zufall2 == zahl){
+
+			       gewinn = gewinn +x;
+
+			}
+
+			if(zufall3 == zahl){
+
+			       gewinn = gewinn +x;
+
+			}
+
+			printf("Herzlichen Glueckwunsch, Ihr Gewinn betraegt %d Geldeinheiten\n", gewinn);
+
+			topf = topf + gewinn;
+
+			}
+
+
+
+		}
+	
+puts("Sie verlassen das Spiel mit 0 Geldeinheiten.");
+	return 0;
+
+}
+
