@@ -1,28 +1,23 @@
 #include <stdio.h>
-#include <math.h>
 #include <stdlib.h>
 #include <time.h>
 
 
 void kegelAusgeben(int anzahlKegelBeginn, unsigned long int zahl){
 
-     	for(int k = anzahlKegelBeginn-1;k>=0;k--){
-		if((zahl & (int)pow(2,k))!=0){
+    for(int k=0; k<anzahlKegelBeginn;k++){
+		if(zahl & (1<<k)){
 			printf("/\\ ");
 		}else{
 			printf("   ");
 		}
-      	}
+    }
 	printf("\n");
 
 	int count = 1;
-	for(int z = anzahlKegelBeginn-1; z >=0 ;z--){
-		if((zahl & (int)pow(2,z)) !=0){
-			if(count<10){
-				printf("0%d ",count);
-			}else{
-				printf("%d ",count);
-			}	
+	for(int k=0; k<anzahlKegelBeginn;k++){
+		if(zahl & (1<<k)){
+			printf("%02d ",count);	
 		}else{
 			printf("   ");
 		}	
@@ -41,16 +36,14 @@ void print_bits(unsigned long int zahl, int anzahlKegelBeginn){
 int yourKegeln(int anzahlKegelBeginn,unsigned long int zahl){
 	int yourMove;
 	printf("Your move: ");
-	/*Faelle die nicht erlaubt sind: 1.keine ganze Zahl 2.Zahl außerhalb anzahl der Kegel 3.your Move = 0 4.Der Kegel wurde schon umgekegelt 5.bei negativer zahl: beide Kegel usind schon umgekegelt gewesen. Bei einem ist es noch ok.  */
-	while(scanf("%d",&yourMove)==0 || ((yourMove>anzahlKegelBeginn) && (yourMove<=(-1)*anzahlKegelBeginn)) || yourMove==0 
-	|| ((yourMove>0)&&((zahl & (int)pow(2,anzahlKegelBeginn-yourMove))==0)) 
-	|| ((yourMove<0) &&((zahl & (int)pow(2,anzahlKegelBeginn-fabs(yourMove)))==0)) || ((yourMove<0) && ((zahl & (int)pow(2,anzahlKegelBeginn-fabs(yourMove)-1))==0))){
+	
+	//Faelle die nicht erlaubt sind: 1.keine ganze Zahl 2.Zahl außerhalb anzahl der Kegel 3.your Move = 0 4.Der Kegel wurde schon umgekegelt 5.bei negativer zahl: beide Kegel usind schon umgekegelt gewesen. Bei einem ist es noch ok.
+	while(scanf("%d",&yourMove)==0||yourMove>anzahlKegelBeginn||yourMove<=-anzahlKegelBeginn||yourMove==0
+	||((yourMove>0)&&!(zahl&(1<<(yourMove-1))))||((yourMove<0)&&!(zahl&((1<<(-yourMove-1))|(1<<-yourMove))))){
 		printf("Ungueltige Eingabe!!!\n");
 		printf("Your move: ");
 		int c;
-		while((c=getchar())!= '\n' && c!=EOF){
-			continue;
-		}
+		while((c=getchar())!= '\n' && c!=EOF);
 	}
 
 	printf("\n");
@@ -62,29 +55,27 @@ int myKegeln(int anzahlKegelBeginn, unsigned long int zahl){
 	
 	int myMove = rand()%anzahlKegelBeginn + 1;
 	int vorzeichen = rand()%2;
-	printf("vorzeichen: %d\n",vorzeichen);
-	while((vorzeichen==0 && !(((zahl & (int)pow(2,anzahlKegelBeginn-myMove))==0) && ((zahl & (int)pow(2,anzahlKegelBeginn-myMove-1))==0))) 
-	|| (vorzeichen==1 && ((zahl & (int)pow(2,anzahlKegelBeginn-myMove))==0))){
-		myMove = rand()%anzahlKegelBeginn + 1;
-	}
-
+	//printf("vorzeichen: %d\n",vorzeichen);
+	
 	if(vorzeichen==0){
-		myMove = (-1)*myMove;
+		myMove = -myMove;
+	}
+	
+	while(myMove>anzahlKegelBeginn||myMove<=-anzahlKegelBeginn||myMove==0
+	||((myMove>0)&&!(zahl&(1<<(myMove-1))))||(((myMove<0)&&!(zahl&((1<<(-myMove-1))|(1<<-myMove)))))){
+		myMove = rand()%anzahlKegelBeginn + 1;
 	}
 
 	return myMove;
 }
 
-unsigned long int kegeln(int anzahlKegelBeginn, unsigned long int zahl, int move){
-	
-	unsigned long int tempVar = pow(2, anzahlKegelBeginn-fabs(move));
-	tempVar = ~tempVar;
-	zahl = zahl & tempVar;
+unsigned long int kegeln(unsigned long int zahl, int move){
+	zahl &= ~(1<<(move-1));
 	return zahl;
 }
 
 int main(){
-
+	setbuf(stdout, NULL); //option for np++ console output
 	int yourMove = 0;
 	int myMove = 0;
 
@@ -94,25 +85,26 @@ int main(){
    	int anzahlKegelBeginn = anzahlKegel;
    	unsigned long int zahl = 0;
    	for(int i = 0; i<=anzahlKegelBeginn;i++){
-     		 zahl = zahl + pow(2,i);
+     		 zahl |= (1<<i);
    	}	
-
+	
    	for(;;){
-      		print_bits(zahl,anzahlKegelBeginn);
-		printf("\n");
+      	//print_bits(zahl,anzahlKegelBeginn);
+		//printf("\n");
 		kegelAusgeben(anzahlKegelBeginn,zahl);
 		yourMove = yourKegeln(anzahlKegelBeginn,zahl);
-		zahl = kegeln(anzahlKegelBeginn, zahl, yourMove);
-
+		
 		if(yourMove>0){
-			anzahlKegel = anzahlKegel - 1;
+			anzahlKegel--;
+			zahl = kegeln(zahl, yourMove);
 		}else{
+			zahl = kegeln(zahl,-yourMove);
 			yourMove--;
-			zahl = kegeln(anzahlKegelBeginn, zahl, yourMove);
-			anzahlKegel = anzahlKegel - 2;
+			zahl = kegeln(zahl, -yourMove);
+			anzahlKegel -= 2;
 		}
 		
-		if(zahl==0){
+		if(anzahlKegel==0){
 			printf("You win!\n");
 			break;
 		}
@@ -121,21 +113,21 @@ int main(){
 
 		printf("My move: %d\n",myMove);
 
-
-		zahl = kegeln(anzahlKegelBeginn, zahl, myMove);
-
 		if(myMove>0){
 			anzahlKegel--;
+			zahl = kegeln(zahl, myMove);
 		}else{
+			zahl = kegeln(zahl,-myMove);
 			myMove--;
-			zahl = kegeln(anzahlKegelBeginn, zahl, myMove);
-			anzahlKegel = anzahlKegel - 2;
+			zahl = kegeln(zahl,-myMove);
+			anzahlKegel -= 2;
 		}
 		
-		if(zahl==0){
+		if(anzahlKegel==0){
 			printf("You lose!\n");
 			break;
 		}
+		
    	}
 
 
