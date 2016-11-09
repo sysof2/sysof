@@ -75,7 +75,7 @@ unsigned long int kegeln(unsigned long int zahl, int move){
 }
 
 int main(){
-	setbuf(stdout, NULL); //option for np++ console output
+	//setbuf(stdout, NULL); //option for np++ console output
 	int yourMove = 0;
 	int myMove = 0;
 
@@ -84,12 +84,12 @@ int main(){
    	int anzahlKegel = rand() % 32 + 1;
    	int anzahlKegelBeginn = anzahlKegel;
    	unsigned long int zahl = 0;
-   	for(int i = 0; i<=anzahlKegelBeginn;i++){
+   	for(int i = 0; i<anzahlKegelBeginn;i++){
      		 zahl |= (1<<i);
    	}	
 	
    	for(;;){
-      	//print_bits(zahl,anzahlKegelBeginn);
+      	//print_bits(zahl,32);
 		//printf("\n");
 		kegelAusgeben(anzahlKegelBeginn,zahl);
 		yourMove = yourKegeln(anzahlKegelBeginn,zahl);
@@ -104,12 +104,13 @@ int main(){
 			anzahlKegel -= 2;
 		}
 		
-		if(anzahlKegel==0){
+		if(zahl==0){
 			printf("You win!\n");
 			break;
 		}
 
 		myMove = myKegeln(anzahlKegelBeginn,zahl);
+		
 
 		printf("My move: %d\n",myMove);
 
@@ -123,10 +124,11 @@ int main(){
 			anzahlKegel -= 2;
 		}
 		
-		if(anzahlKegel==0){
+		if(zahl==0){
 			printf("You lose!\n");
 			break;
 		}
+		
 		
    	}
 
