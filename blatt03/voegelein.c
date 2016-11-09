@@ -15,7 +15,7 @@ int main(){
 
 	#define Z1
 	#include "macros.h"
-	#undef Z2
+	#undef Z1
 
 	#define S2
 	#include "strophe.h"
