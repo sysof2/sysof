@@ -1,6 +1,4 @@
-#include <stdio.h>
 
-int main(){
 	#define AUTOR
 	#include "macros.h"
 	#undef AUTOR
@@ -32,6 +30,3 @@ int main(){
 	#define Z1
 	#include "macros.h"
 	#undef Z1
-
-	return 0;
-}
