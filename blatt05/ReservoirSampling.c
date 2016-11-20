@@ -19,7 +19,7 @@ void set_mountains(int list_number, char* name, int hight){
 
 int reservoirSampling(){
     FILE *datei;
-    datei = fopen("berge1","r");
+    datei = fopen("berge","r");
     int t = 0;
     srand(time(NULL));
     int m = 0;
