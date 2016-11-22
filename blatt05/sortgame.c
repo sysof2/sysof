@@ -8,7 +8,7 @@
 struct mountains{
     char name[MAX_NAME_LEN];
     int hight;
-}mountain_list[LIST_COUNT],sorted_list[LIST_COUNT];
+} mountain_list[LIST_COUNT], sorted_list[LIST_COUNT];
 
 void set_mountains(int list_number, char* name, int hight){
     strncpy(mountain_list[list_number].name,name, MAX_NAME_LEN);
@@ -36,13 +36,13 @@ int main(){
 void play_game(){
     bool finished = false;
     int src=0, dest=0;
-    int points = -1;
+    int points = 0;
     
     while(!finished){
         
         printf("\nCurrent state: \n");
         
-        for(int i=0;i<LIST_COUNT;i++){
+        for(int i=0; i<LIST_COUNT; i++){
             if(sorted_list[i].name[0]!=0){
                 printf("%d: %s\n",i,sorted_list[i].name);
             }
@@ -50,7 +50,7 @@ void play_game(){
         
         printf("\nStill to be sorted: \n");
         
-        for(int i=0;i<LIST_COUNT;i++){
+        for(int i=0; i<LIST_COUNT; i++){
             if(mountain_list[i].name[0]!=0){
                 printf("%d: %s\n",i,mountain_list[i].name);
             }
@@ -58,32 +58,38 @@ void play_game(){
         
         printf("\nWhat is to be inserted where? \n");
         
-        if(scanf("%d",&src)==0 || src>=LIST_COUNT || src<0) {
-            printf("Ungueltige Eingabe!!!\n");
+        while(scanf("%d",&src)==0 || src>=LIST_COUNT || src<0) {
+            printf("Ungueltige Eingabe der Quelle!!!\n");
             int c;
             while((c=getchar()) != '\n' && c!=EOF);
         }
+        //printf("src: %d\n",src);
         
-        if(scanf("%d",&dest)==0 || dest>=LIST_COUNT || dest<0) {
-            printf("Ungueltige Eingabe!!!\n");
+        while(scanf("%d",&dest)==0 || dest>=LIST_COUNT || dest<0) {
+            printf("Ungueltige Eingabe des Ziels!!!\n");
             int c;
             while((c=getchar()) != '\n' && c!=EOF);
         }
-        
+        //printf("dest: %d\n",dest);
         
         if(sorted_list[dest].name[0] != 0){
             finished = true;
             printf("\nPosition already used\n");
+        }else if(mountain_list[src].name[0] == 0){
+            finished = true;
+            printf("\nItem already assigned\n");
         }else{
             sorted_list[dest]=mountain_list[src];
             mountain_list[src].name[0]=0;
+            points++;
             
             for(int i=0; i<LIST_COUNT-1; i++){
                 if(sorted_list[i].hight>sorted_list[i+1].hight && sorted_list[i+1].hight != 0 && sorted_list[i].hight != 0){
                     finished = true;
+                    points--;
                     printf("\nItems no longer sorted: \n");
-                    for(int i=0;i<LIST_COUNT;i++){
-                        if(sorted_list[i].name[0]!=0){
+                    for(int i=0; i<LIST_COUNT; i++){
+                        if(sorted_list[i].name[0] != 0){
                             printf("%d: %d, %s\n",i,sorted_list[i].hight,sorted_list[i].name);
                         }
                     }
@@ -93,13 +99,11 @@ void play_game(){
             
         }
         
-        points++;
-        
-        if(points == LIST_COUNT-1){
+        if(points == LIST_COUNT){
             finished = true;
             printf("\nYou won!\n");
-            for(int i=0;i<LIST_COUNT;i++){
-                if(sorted_list[i].name[0]!=0){
+            for(int i=0; i<LIST_COUNT; i++){
+                if(sorted_list[i].name[0] != 0){
                     printf("%d: %d, %s\n",i,sorted_list[i].hight,sorted_list[i].name);
                 }
             }
