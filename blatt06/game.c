@@ -92,18 +92,13 @@ void append2(struct word **lst, int value) {
     }
     else{ // wenn die liste leer ist, bin ich das erste Element
         *lst=neuesElement;
-        
-        printf("index word: %d\n",(*lst)->value);
     }
 }
 
 void einlesen(struct word **lst, char *name){
     //ersten und letzten Buchstaben identifizieren
-    printf("cityname: %s\n",name);
     int ersterB = (int)name[0]-'A';
     int letzterB = (int)name[strlen(name)-1]-'a';
-    printf("ersterB: %d\n", ersterB);
-    printf("letzterB: %d\n", letzterB);
    
     if((*lst)!=NULL){
         struct word *temp;
@@ -114,7 +109,6 @@ void einlesen(struct word **lst, char *name){
             temp = temp->next;
         }
         if(temp==NULL){
-            printf("erster buchstabe neu einfuegen in word_list\n");
             append2(&(*lst), ersterB);
             //stadt einfuegen
             struct word *temp2;
@@ -135,7 +129,6 @@ void einlesen(struct word **lst, char *name){
             temp = temp->next;
         }
         if(temp == NULL){
-            printf("letzter buchstabe neu einfuegen in word_list\n");
             append2(&(*lst), letzterB);
             //stadt einfuegen
             struct word *temp2;
@@ -159,15 +152,69 @@ void einlesen(struct word **lst, char *name){
 }
 
 
-/*void delete(struct wordSet **lst){
-    struct wordSet *tmp;
-    tmp = (struct wordSet*) calloc(1,sizeof(*tmp));
-    tmp->value=(*lst)->value;
-    tmp->next=(*lst)->next;
+void delete2(struct wordSet **lst){
+    struct wordSet *tmp = (*lst)->next;
     (*lst)->next=(*lst)->next->next;
+    free(tmp);
+}
+
+void delete3(struct word ***lst, char *name, int b){
+    //b gibt an ob ersterB oder letzterB
+    int variabelB;
     
-    free(tmp);		
-}*/
+    if(b==0){
+        variabelB = (int)name[0]-'A';
+    }else{
+        variabelB = (int)name[strlen(name)-1]-'a';
+    }
+    
+    struct word *temp = **lst;
+    
+    while((temp !=NULL) && (temp->value != variabelB)){
+        temp = temp->next;
+    }
+    
+    if(temp != NULL){
+        struct wordSet *h;
+        if(b==0){
+            h = temp->erster_buchstabe;
+        }else{
+            h = temp->letzter_buchstabe;
+        }
+        
+        struct wordSet *after = h->next;
+        char *save = h->city;
+        char *save2 = after->city;
+        
+        while(h !=NULL && (after !=NULL) && (strcmp(save2,name)!=0) && (strcmp(save,name)!=0)){
+            h = h->next;
+            after = after->next;
+            save = h->city;
+            save2 = after->city;
+        }
+        
+        if(strcmp(save,name)==0){
+            //erstes Element in der Liste
+            if(b==0){
+                temp->erster_buchstabe = h->next;
+            }else{
+                temp->letzter_buchstabe = h->next;
+            }
+            free(h);
+        }else{
+            delete2(&h);
+        }
+    }
+
+    
+}
+
+void delete(char *name, struct word **lst){
+    int b = 0;
+    delete3(&lst,name,b);
+    b = 1;
+    delete3(&lst,name,b);
+}
 
 int main(){
     struct word *word_list;
