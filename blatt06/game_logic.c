@@ -177,9 +177,9 @@ int printf_final_list(struct wordSet **lst);
 void prepend(struct wordSet **lst, char *city);
 int matching_words_exist(struct word **word_list, char firstchar, char lastchar);
 int word_in_list(struct word **word_list, char *buf);
+void print_allitemsleft(struct word **word_list);
 
 int main(){
-    int return_value;
     
     struct word *word_list;
     word_list = NULL;
@@ -198,20 +198,20 @@ int main(){
     //einlesen(&word_list,test5);
     //einlesen(&word_list,test6);    
     
-    return_value = read_file(&word_list);
+    if(read_file(&word_list)) return 1;
     
     player_turns(&word_list);
     
     //printlisteGesamt(&word_list);
     
-    return return_value;
+    return 0;
 }
 
 
 int read_file(struct word **word_list) {
     FILE *file;
     
-    file = fopen("cities2.txt","r");
+    file = fopen("cities.txt","r");
     if(file==NULL) {
         printf("Fehler beim oeffnen der Datei!!!\n");
         return 1;
@@ -222,7 +222,9 @@ int read_file(struct word **word_list) {
         //printf("%s\n",buf);
         //overwrite '\n' with '\0'
         size_t p=strlen(buf);
-        buf[p-1]='\0';
+        if(buf[p-1]=='\n'){
+				buf[p-1]='\0';
+		}
         einlesen(word_list,buf);
         word_count++;
     }
@@ -250,35 +252,45 @@ int player_turns(struct word **word_list){
         fgets(buf, buflen, stdin);
         //overwrite '\n' with '\0'
         size_t p=strlen(buf);
-        buf[p-1]='\0';
+        if(buf[p-1]=='\n'){
+				buf[p-1]='\0';
+		}
         //printf("%s\n",buf);
-        
+		
         if(!strcmp(buf,"Bye")){
             return 0;
         }else if(strlen(buf)==0){
-            printf("Print help: \n");
-            //INSERT FUNCTION PRINT ALL CITIES LEFT HERE
+            printf("Full list of all items left: \n");
+            print_allitemsleft(word_list);
             continue;
         }
-        
+        //printf("%c\n",firstchar);
+        //printf("%c\n",lastchar);
         
         if(word_in_list(word_list,buf)){
         
             if(word_list_final == NULL){
                 append(&word_list_final, buf);
+				//delete here
                 word_chain_count++;
+				word_count--;
                 
             } else if(buf[strlen(buf)-1] == firstchar){
                 prepend(&word_list_final, buf);
+				//delete here
                 word_chain_count++;
+				word_count--;
                 
             } else if (buf[0]-'A'+'a' == lastchar){
                 append(&word_list_final, buf);
+				//delete here
                 word_chain_count++;
+				word_count--;
                 
             }else{
                 printf("Word is not fitting to the current chain, starting with new chain\n");
                 word_list_final = NULL;
+				word_chain_count=0;
             }
         
         }else{
@@ -293,18 +305,18 @@ int player_turns(struct word **word_list){
             while (lst->next != NULL ){ // suche das letzte Element
                 lst=lst->next;
             }   
-            lastchar = lst->city[strlen(word_list_final->city)-1];
-            
+            lastchar = lst->city[strlen(lst->city)-1];
+            //printf("city: %s\n",lst->city);
         }
         
         //printf("%c\n",firstchar);
-        //printf("%c\n",lastchar);
-        
+		//printf("%c\n",lastchar);
         
         if(!matching_words_exist(word_list, firstchar,lastchar)&&word_list_final != NULL){
             //new chain
             printf("No candidates left for old chain, starting with new chain.\n");
             word_list_final = NULL;
+			word_chain_count=0;
         }else{
             //printf("matching candidates\n");
         }
@@ -390,6 +402,22 @@ void prepend(struct wordSet **lst, char *city) {
     *lst = neuesElement;
 }
 
+void print_allitemsleft(struct word **word_list){
+	struct word *lst = *word_list;
+       
+    while (lst!= NULL ){
+	
+		struct wordSet *wordsetlst = lst->erster_buchstabe;
+            
+        while (wordsetlst != NULL ){
+			printf("%s\n",wordsetlst->city);
+			wordsetlst=wordsetlst->next;
+        }
+                
+        lst=lst->next;
+    }
+}
+
 //druckt die wordSet liste im format: Ulm ... München
 int printf_final_list(struct wordSet **lst){
     
@@ -419,6 +447,3 @@ int printf_final_list(struct wordSet **lst){
     
     return 0;
 }
-
-
-
