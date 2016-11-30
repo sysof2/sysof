@@ -234,5 +234,18 @@ int main(){
     
     
     printlisteGesamt(&word_list);
+    
+    printf("\n");
+    printf("\n");
+    printf("\n");
+    printf("**********delete***************\n");
+    printf("\n");
+    printf("\n");
+    printf("\n");
+    
+    
+    delete(test1, &word_list);
+    
+    printlisteGesamt(&word_list);
     return 0;
 }
