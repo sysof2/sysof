@@ -73,8 +73,20 @@ void printImage(node *tree, int row, int column, int size){
     }
 }
 
-void printTree(node *tree, int row, int column, int size){
-//i
+void printTree(node *tree){
+    if(!tree->left_down){
+        printf("%c",tree->colour);
+        return;
+    }else{
+        printf("[");
+        printTree(tree->left_up);
+        printTree(tree->right_up);
+        printTree(tree->left_down);
+        printTree(tree->right_down);
+        printf("]");
+        return;
+
+    }
 }
 
 int main(){
@@ -106,6 +118,7 @@ int main(){
         printf("\n");
     }
     
+    printTree(root);
     printf("\n");
     return 0;
 }
