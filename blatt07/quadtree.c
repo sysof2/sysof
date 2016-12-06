@@ -177,7 +177,7 @@ void insert(node **quad_tree, int size, char colour, int row, int col){
 			}
 			
 		}else{
-			temp->colour='g';
+			temp->colour='m';
 		}
 		
 		//printf("current size = %d, current colour = %c\n",temp->size,temp->colour);
