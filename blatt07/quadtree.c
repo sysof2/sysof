@@ -1,7 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
+#include <unistd.h>
+
+#define BUFLEN 256
+
+//Auskommentieren und Dateinamen anpassen, falls die Eingabe per Datei erfolgen soll, sonst erfolgt sie über die Standardeingabe
+//#define FILENAME "Astacoides.txt"
 
 struct quad_tree{
 	char colour; //Entweder w oder b oder m für mixed
@@ -13,36 +18,102 @@ typedef struct quad_tree node;
 
 void initTree(node **root, int size, char initcolour);
 void insert(node **quad_tree, int size, char colour, int row, int col);
-void printTreeImage(node *tree, int size);
+void printTreeImage(node *tree);
 void printImage(node *tree, int row, int col, int size);
 void printTree(node *tree);
+void read_input(node **root,FILE *file);
 
 int main(){
 	node *root = NULL;
 	
-	initTree(&root, 4, 'b');
-	
-	
-	insert(&root,4,'w',2,0);
-	insert(&root,4,'w',1,2);
-	insert(&root,4,'w',2,1);
-	
-	//printf("%c\n",root->child[1]->child[2]->colour);
-	
-	printTreeImage(root,4);
-	printTree(root);
-	printf("\n");
-	
-	insert(&root,4,'b',2,0);
-	insert(&root,4,'b',1,2);
-	
-	printTreeImage(root,4);
-	printTree(root);
-	printf("\n");
+	#ifdef FILENAME
+		FILE *file;
+		
+		file = fopen(FILENAME,"r");
+		
+		if(file==NULL) {
+			printf("Fehler beim oeffnen der Datei!!!\n");
+			return 1;
+		}
+		
+		read_input(&root,file);
+		
+		fclose(file);
+	#endif
+		
+	#ifndef FILENAME
+		read_input(&root,stdin);
+	#endif
 	
 	return 0;
 }
 
+//liest die befehle entweder von einer datei oder der standardeingabe ein
+void read_input(node **root, FILE *file){
+	
+	char buf[BUFLEN];
+	
+	if(fgets(buf, BUFLEN, file)){
+		int size = (int) strtol(buf,NULL,10);
+		//printf("size: %d", size);
+		if(size!=0){
+			initTree(root,size,'b'); //initialisiert den Baum als komplett schwarz
+		}else{
+			printf("input not correct\n");
+			return;
+		}
+	}
+	
+	while(fgets(buf, BUFLEN, file)){
+		//printf("%s",buf);
+		if(strncmp(buf, "PUT",3)==0){
+			unsigned int x=0,y=0;
+			if(strlen(buf)>=7){
+				char *ptr;
+				ptr = strtok(buf, " ");
+				ptr = strtok(NULL, " ");
+				
+				if(ptr==NULL) continue;
+				x = (unsigned int) strtol(ptr,NULL,10);
+
+				ptr = strtok(NULL, " ");
+				
+				if(ptr==NULL) continue;
+				y = (unsigned int) strtol(ptr,NULL,10);
+
+				//printf("x= %u, y=%u\n",x,y);
+				insert(root,(*root)->size,'w',x,y);
+			}
+		}
+		else if(strncmp(buf, "PRINT",5)==0){
+			if(strlen(buf)>=7){
+				if(strncmp(&buf[6],"IMAGE",5)==0){
+					//printf("Printed Image!!\n");
+					#ifdef FILENAME
+						system("clear");
+					#endif
+					printTreeImage(*root);
+					#ifdef FILENAME
+						usleep(200000);
+					#endif
+				}
+				else if(strncmp(&buf[6],"TREE",4)==0){
+					//printf("Printed Tree!!\n");
+					//Die Stringausgabe bei den Bildern wird sehr groß, zur Übersichtlichkeit wird sie daher hier nicht ausgegeben
+					#ifndef FILENAME
+						printTree(*root);
+						printf("\n");
+					#endif
+				}
+			}
+		}
+		else {
+			printf("Invalid Command!!\n");
+		}
+	}
+}
+
+//druckt den baum als string aus
 void printTree(node *tree){
 	
 	if(!tree->child[0]){
@@ -61,11 +132,11 @@ void printTree(node *tree){
 }
 
 //druckt den kompletten Baum aus
-void printTreeImage(node *tree, int size){
-	for(int row=0;row<size;row++){
-		for(int col=0; col<size; col++){
+void printTreeImage(node *tree){
+	for(int row=0;row<tree->size;row++){
+		for(int col=0; col<tree->size; col++){
 			//printf("Koordinaten: r:%d c:%d",row,col);
-			printImage(tree, row, col, size);
+			printImage(tree, row, col, tree->size);
 		}
 		printf("\n");
 	}
