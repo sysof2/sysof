@@ -11,7 +11,7 @@
 struct quad_tree{
 	char colour; //Entweder w oder b oder m für mixed
 	int size; //gibt größe des Teilbildes an
-	struct quad_tree *child[4]; //child[0] = links oben, child[0] = rechts oben, child[0] = links unten, child[0] = rechts unten,
+	struct quad_tree *child[4]; //child[0] = links oben, child[1] = rechts oben, child[2] = links unten, child[3] = rechts unten,
 };
 
 typedef struct quad_tree node;
