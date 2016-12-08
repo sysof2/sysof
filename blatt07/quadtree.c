@@ -6,7 +6,7 @@
 #define BUFLEN 256
 
 //Auskommentieren und Dateinamen anpassen, falls die Eingabe per Datei erfolgen soll, sonst erfolgt sie über die Standardeingabe
-//#define FILENAME "Astacoides.txt"
+//#define FILENAME "Meerfahrt.txt"
 
 struct quad_tree{
 	char colour; //Entweder w oder b oder m für mixed
@@ -210,6 +210,9 @@ void insert(node **quad_tree, int size, char colour, int row, int col){
 				temp2->size=size/2;
 				temp2->colour=temp->colour;
 				temp->child[i]=temp2;
+				for(int k=0;k<4;k++){
+					temp->child[i]->child[k]=NULL;
+				}
 			}
 			
 			//Geht weiter in den Teilbaum
