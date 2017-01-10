@@ -1,14 +1,17 @@
 LIB :=		`pkg-config --cflags --libs gdk-pixbuf-2.0`
 CFLAGS :=	-std=gnu11 -Wall
 
-all: testit.o mandelbrot.o
-	gcc $(CFLAGS) -o testit testit.o mandelbrot.o $(LIB)
+all: main.o mandelbrot.o output.o
+	gcc $(CFLAGS) -o main main.o mandelbrot.o output.o $(LIB)
 
-testit.o: testit.c mandelbrot.h
-	gcc $(CFLAGS) -c testit.c $(LIB)
+main.o: main.c mandelbrot.h output.h
+	gcc $(CFLAGS) -c main.c $(LIB)
 
 mandelbrot.o: mandelbrot.c mandelbrot.h
 	gcc $(CFLAGS) -c mandelbrot.c $(LIB)
+
+output.o: output.c output.h
+	gcc $(CFLAGS) -c output.c $(LIB)
 
 clean:
 	rm -f *.o

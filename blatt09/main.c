@@ -1,9 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h> //fuer atoi/atof
 #include <ctype.h> //fuer isdigit()
-//#include "mandelbrot.h"
+#include "mandelbrot.h"
+#include "output.h"
 
 int main(int argc, char* argv[]){
+	
+	//Standardwerte
     double x = -0.7;
     double y = 0.0;
     double d = 3.07;
@@ -81,13 +84,21 @@ int main(int argc, char* argv[]){
             printf("\n");
 
         }
-        printf("hier bin ich gelandet\n");
+        //printf("hier bin ich gelandet\n");
     }
-    printf("hier bin ich gelandet2\n");
+    //printf("hier bin ich gelandet2\n");
     
     //calculate_Matrix(parameter_list.w,parameter_list.h,parameter_list.i);
-    
-    
-    
+    int iterations[h][w];
+	
+	printf("calculate\n");
+    calculate_Matrix(x,y,d,w,h,i,iterations);
+	
+	printf("blending\n");
+	//blending(h,w,iterations);
+	
+	printf("print\n");
+	output_image(h,w,iterations,i);
+	
     return 0;
 }

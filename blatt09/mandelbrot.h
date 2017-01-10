@@ -17,6 +17,6 @@
  */
 int mandelbrot();
 
-void calculate_Matrix(int weight, int height, int max_iter);
+void calculate_Matrix(double x, double y, double d, int w, int h, int max_iter, int iterations[h][w]);
 
 #endif /* mandelbrot_h */
