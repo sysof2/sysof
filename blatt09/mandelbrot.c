@@ -17,7 +17,7 @@ int mandelbrot(double x0, double y0, int max_iter){
     double yi = 0.0;
     int iteration = 0;
     while (xi*xi + yi*yi < 2*2  &&  iteration < max_iter) {
-        int xtemp = xi*xi - yi*yi + x0;
+        double xtemp = xi*xi - yi*yi + x0;
         yi = 2*xi*yi + y0;
         xi = xtemp;
         iteration = iteration + 1;
