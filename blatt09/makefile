@@ -1,5 +1,5 @@
 LIB :=		`pkg-config --cflags --libs gdk-pixbuf-2.0`
-CFLAGS :=	-std=gnu11 -Wall
+CFLAGS :=	-std=gnu11 -Wall -lm
 
 all: main.o mandelbrot.o output.o
 	gcc $(CFLAGS) -o main main.o mandelbrot.o output.o $(LIB)
