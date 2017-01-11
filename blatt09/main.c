@@ -45,7 +45,7 @@ int main(int argc, char* argv[]){
             /*Test 2:keine buchstaben ohne - davor erlaubt*/
             /*Test 3:wert bei d,w,h,i darf nur >0 sein*/
             /*Test 4: bei w, h,i sind nur ganze zahlen erlaubt*/
-            if(j+1<argc && ((argv[j][0] == '-' && !((argv[j][1] == 'x') || (argv[j][1] == 'y') || (argv[j][1] == 'd') || (argv[j][1] == 'w') ||(argv[j][1] == 'h') || (argv[j][1] == 'i') || isdigit(argv[j][1])!=0)) || (argv[j][0]!='-' && isdigit(argv[j][0])==0) || ((argv[j][1] == 'd' || argv[j][1] == 'w' || argv[j][1] == 'h' || argv[j][1] == 'i') && argv[j+1][0] == '-' && isdigit(argv[j+1][1])!=0) || ((isdigit(argv[j+1][0])!=0 && strchr(&argv[j+1][0], '.')!=NULL) ||(argv[j+1][0]== '-' && strchr(&argv[j+1][1], '.')!=NULL)))){
+            if(j+1<argc && ((argv[j][0] == '-' && !((argv[j][1] == 'x') || (argv[j][1] == 'y') || (argv[j][1] == 'd') || (argv[j][1] == 'w') ||(argv[j][1] == 'h') || (argv[j][1] == 'i') || isdigit(argv[j][1])!=0)) || (argv[j][0]!='-' && isdigit(argv[j][0])==0) || ((argv[j][1] == 'd' || argv[j][1] == 'w' || argv[j][1] == 'h' || argv[j][1] == 'i') && argv[j+1][0] == '-' && isdigit(argv[j+1][1])!=0) || ((argv[j][1]=='w'|| argv[j][1]=='h' || argv[j][1]=='i') && ((isdigit(argv[j+1][0])!=0 && strchr(&argv[j+1][0], '.')!=NULL) ||(argv[j+1][0]== '-' && strchr(&argv[j+1][1], '.')!=NULL))))){
                 finished = 1;
                 printf("Ungueltige Eingabe\n");
                 break;
