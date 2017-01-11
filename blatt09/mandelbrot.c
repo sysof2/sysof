@@ -29,7 +29,7 @@ int mandelbrot(double x0, double y0, int max_iter){
 void calculate_Matrix(double x, double y, double d, int w, int h, int max_iter, int iterations[h][w]){
     
 	//calculate vertikal diameter
-	double pageratio = h/w;
+	double pageratio = (double)h/(double)w;
 	double vertdia = pageratio * d;
     
     //start values of x0,y0, top left corner of the picture
