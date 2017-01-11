@@ -1,3 +1,4 @@
+#include <math.h>
 #include "output.h"
 
  
@@ -46,17 +47,16 @@ void get_colour(unsigned char *colour, int cur_iter, int max_iter){
 	*/
 	
 	}else{
+		double value = 50*cur_iter;
+		double frequency = 5/(double)max_iter;
 		
-		float m[3];
-		
-		m[0] = (float)255/(float)max_iter;
-		m[1] = (float)0/(float)max_iter;
-		m[2] = (float)-255/(float)max_iter;
+		double r = sin(frequency * value + 0) * (127) + 128;
+   		double g = sin(frequency * value + 1) * (127) + 128;
+  		double b = sin(frequency * value + 3) * (127) + 128;
 	
-		colour[0] = m[0]*100*cur_iter+0;
-		colour[1] = m[1]*100*cur_iter+0;
-		colour[2] = m[2]*100*cur_iter+255;
-		
+		colour[0] = r;
+		colour[1] = g;
+		colour[2] = b;
 	}
 	
 }
