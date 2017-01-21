@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
         dirname = ".";
     }
     
-    printf("directory used: %s\n",dirname);
+    //printf("directory used: %s\n",dirname);
     
     struct filelist *file_list = NULL;
     struct dirlist *directory_list = NULL;
@@ -63,11 +63,11 @@ int main(int argc, char* argv[]) {
         
         //print_dir(directory_list);
         if(!strcmp(directory_list->dirname,"..")){
-            printf("going up\n");
+            //printf("going up\n");
             delete_first_dir(&directory_list);
             continue;
         }else{
-            printf("going down:\n");
+            //printf("going down:\n");
         }
         
         
@@ -83,7 +83,7 @@ int main(int argc, char* argv[]) {
         
         while ((entry = readdir(dir))) {
             
-            printf("%s: ", entry->d_name);
+            //printf("%s: ", entry->d_name);
             
             struct stat statbuf;
             if (lstat(entry->d_name, &statbuf) < 0) {
@@ -91,17 +91,15 @@ int main(int argc, char* argv[]) {
             }
             
             if (S_ISREG(statbuf.st_mode)) {
-                printf("\tregular file with %jd bytes\n",(intmax_t) statbuf.st_size);
+                //printf("\tregular file with %jd bytes\n",(intmax_t) statbuf.st_size);
                 prepend_file(&file_list,entry->d_name, (intmax_t) statbuf.st_size);
                 count++;
                 
             } else if (S_ISDIR(statbuf.st_mode)) {
-                puts("\tdirectory");
+                //puts("\tdirectory");
                 if(strcmp(entry->d_name,".") && strcmp(entry->d_name,"..")){
                     prepend_dir(&directory_list,"..");
                     prepend_dir(&directory_list,entry->d_name);
-                    //apend_dir(&directory_list,entry->d_name);
-                    //apend_dir(&directory_list,"..");
                 }
                 
             } else if (S_ISLNK(statbuf.st_mode)) {
@@ -110,31 +108,24 @@ int main(int argc, char* argv[]) {
                 if (len < 0) {
                     perror(entry->d_name); exit(1);
                 }
-                printf("\tsymbolic link pointing to %.*s\n", (int)len, buf);
+                //printf("\tsymbolic link pointing to %.*s\n", (int)len, buf);
                 
             } else {
-                puts("\tspecial");
+                //puts("\tspecial");
             }
             
         }
         
         closedir(dir);
         
-        print_dir(directory_list);
+        //print_dir(directory_list);
     }
     
-    print_file(file_list);
+    //print_file(file_list);
     
-    printf("\n");
+    //printf("\n");
     
     sort_filelist(&file_list);
-    
-    puts("\tsorted");
-    print_file(file_list);
-    printf("\n");
-    
-    printf("result:\n");
-    print_file2(file_list);
     return 0;
 }
 
@@ -226,36 +217,48 @@ void prepend_file(struct filelist **file_list, char *filename, intmax_t size){
 }
 
 void sort_filelist(struct filelist **file_list){
-    //printf("Test\n");
+   
+    struct filelist *sorted[10] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL} ;
     struct filelist *temp = *file_list;
-    struct filelist *prev = NULL;
-    //printf("Test\n");
-    for(int x=0; x<count; x++){
-        printf("Test\n");
-        temp = *file_list;
-        printf("temp1:%s\n", temp->filename);
-        prev = NULL;
-        for(int y=0; y<count;y++){
-            printf("neue Runde------------------------\n");
-            printf("temp2: %s\n",temp->filename);
-            if(temp !=NULL && temp->next!=NULL && (temp->size < temp->next->size)){
-                if(prev!=NULL) printf("prev: %s  \n ",prev->filename);
-                printf("next: %s  \n ",temp->next->filename);
-                struct filelist *h;
-                h = (struct filelist*) calloc(1,sizeof(*h));
-                //printf("prev: %s   ",prev->next->filename);
-                prev->next = temp->next;
-                h = temp->next->next;
-                temp->next->next = temp;
-                temp->next = h;
-                
-            }else{
-                prev = temp;
-                temp = temp->next;
+    int countArray = 0;
+    intmax_t smallestSize;
+    int pos;
+    
+    
+    
+    while(temp!=NULL){
+        if(countArray<10){
+            sorted[countArray] = temp;
+            countArray++;
+        }else{
+            pos = 0;
+            smallestSize = sorted[0]->size;
+            for(int x=1; x<10;x++){
+                if(smallestSize>sorted[x]->size){
+                    smallestSize = sorted[x]->size;
+                    pos = x;
+                }
+            }
+            if(temp->size>sorted[pos]->size){
+                sorted[pos] = temp;
             }
         }
-        printf("--------neu------------\n");
-        //print_file(*file_list);
+        temp=temp->next;
     }
-    
+    for(int k=0; k<10; k++){
+        for(int j=0; j<9; j++){
+            if(sorted[j]!=NULL && sorted[j+1]!=NULL && sorted[j]->size<sorted[j+1]->size){
+                temp = sorted[j];
+                sorted[j] = sorted[j+1];
+                sorted[j+1]=temp;
+            }
+        }
+    }
+    printf("Result:\n");
+    for(int y=0;y<10;y++){
+        if(sorted[y]!=NULL){
+            printf("%s: %jd\n", sorted[y]->filename, sorted[y]->size);
+        }
+        
+    }
 }
