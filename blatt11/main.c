@@ -169,10 +169,23 @@ int main(int argc, char** argv){
     //print_list();
     printf("\n");
 	
-	calculate_distance("Aachen","Absberg");
-	calculate_distance("Mindelheim","Oberrieden (Schwaben)");
+	//calculate_distance("Aachen","Absberg");
+	//calculate_distance("Mindelheim","Oberrieden (Schwaben)");
 	//calculate_distance("Berlin","Tokio");
 	
+	char *src = argv[1];
+	char *dest = argv[2];
+	
+	printf("*** Long chain of short trips ***\n");
+	printf("Your objective is to travel from %s to %s through a long chain of intermediate towns\
+	where the maximal distance between two consecutive towns of your journey is to be minimized\n",src,dest);
+	printf("Your are currently located in %s\n", src);
+	
+	printf("Next town?\n");	
+	//printf("Distance from %s to %s: %d km",dist);
+
+	//printf("Welcome to %s!\n",dest);
+	//printf("Your maximal intermediate distance was %d km",maxdist);
     return 0;
 }
 
