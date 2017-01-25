@@ -10,8 +10,7 @@
 #include <math.h>
 
 //default: 10000
-#define HASHLENGTH 5
-//#define HASHSTART 5381
+#define HASHLENGTH 10000
 #define PI 3.1415926535897932384
 
 const int BUFFER_SIZE = 8192;
@@ -26,19 +25,6 @@ struct communities{
 };
 
 struct communities *hash[HASHLENGTH];
-
-/*static unsigned int hashadd(int hashval, unsigned char ch) {
-    hashval += hashval << 5;
-    return hashval ^ ch;
-}
-
-static unsigned int compute_hash(const char* buf) {
-    int hashval = HASHSTART;
-    while (*buf) {
-        hashval = hashadd(hashval, *buf++);
-    }
-    return hashval;
-}*/
 
 int readline(FILE* fp, stralloc* sa, stralloc* latit, stralloc* meri) {
     int count = 0;//gibt an ob man stadtnamen, laengengrad oder breitengrad einliest
@@ -80,20 +66,12 @@ int readline(FILE* fp, stralloc* sa, stralloc* latit, stralloc* meri) {
             stralloc_cat(meri,&temp);
             if(meri->s[meri->len-1] == '\n') break;
         }
-
-        
-       
-       
     }
     return 1;
 }
 
 void append(char* cityname, char *latid, char *meri, int hashindex){
-    /*printf("test2\n");
-    printf("cityname: %s\n", cityname);
-    printf("latid: %s\n", latid);
-    printf("meri: %s\n", meri);
-    printf("hashindex: %d\n", hashindex);*/
+
     struct communities *new;
     new = (struct communities*) calloc(1,sizeof(*new));
     new->city.s=0;
@@ -123,8 +101,6 @@ void print_list(){
         }
         printf("\n");
     }
-    
-    
 }
 
 double calculate_distance(char *city1, char *city2);
@@ -146,7 +122,6 @@ int main(int argc, char** argv){
     
     while(readline(fp, &sa, &latit, &meri)){
         //printf("name: %s, Laengengrad: %s, Breitengrad:%s\n",sa.s, latit.s, meri.s);
-    
         hashindex = compute_hash(sa.s) % HASHLENGTH;
         append(sa.s,latit.s,meri.s, hashindex);
         
@@ -163,35 +138,69 @@ int main(int argc, char** argv){
         sa.a=0;
     }
     fclose(fp);
-    printf("\n");
-    printf("***********Ausgabe************\n");
-    printf("\n");
-    //print_list();
-    printf("\n");
 	
-	//calculate_distance("Aachen","Absberg");
-	//calculate_distance("Mindelheim","Oberrieden (Schwaben)");
-	//calculate_distance("Berlin","Tokio");
+	if(argc<3){
+		printf("Not enough arguments\n");
+		return 0;
+	}
+	
+	if(argc>3){
+		printf("Too many arguments\n");
+		return 0;
+	}
 	
 	char *src = argv[1];
 	char *dest = argv[2];
+	double dist = 0;
+	double maxdist = 0;
+	char input[100];
+	char temp[100];
+	
+	if(calculate_distance(src,dest)==0){
+		printf("Source or destination is invalid\n");
+		return 0;
+	}
+	
+	strcpy(temp,src);
 	
 	printf("*** Long chain of short trips ***\n");
 	printf("Your objective is to travel from %s to %s through a long chain of intermediate towns\
-	where the maximal distance between two consecutive towns of your journey is to be minimized\n",src,dest);
-	printf("Your are currently located in %s\n", src);
+ where the maximal distance between two consecutive towns of your journey is to be minimized\n",src,dest);
 	
-	printf("Next town?\n");	
-	//printf("Distance from %s to %s: %d km",dist);
-
-	//printf("Welcome to %s!\n",dest);
-	//printf("Your maximal intermediate distance was %d km",maxdist);
+	while(strcmp(input,dest)){
+		printf("Your are currently located in %s\n", temp);
+		printf("Next town?\n");
+		fgets(input, 100, stdin);
+		size_t p=strlen(input);
+		
+		if(input[p-1]=='\n') input[p-1]='\0';
+		
+		dist = calculate_distance(temp,input);
+		
+		if(dist==0){
+			printf("invalid city\n");
+			continue;
+		}
+		
+		printf("Distance from %s to %s: %f km\n",temp,input,dist/1000);
+		
+		if(dist>maxdist){
+			maxdist = dist;
+			printf("This is the new maximal Distance!\n");
+		}
+		
+		strcpy(temp,input);
+		
+	}
+	
+	printf("Welcome to %s!\n",dest);
+	printf("Your maximal intermediate distance was %f km\n",maxdist/1000);
+	
     return 0;
 }
 
 
 double calculate_distance(char *city1, char *city2){
-	
 	
 	unsigned int hash_val1 = compute_hash(city1) % HASHLENGTH;
 	unsigned int hash_val2 = compute_hash(city2) % HASHLENGTH;
@@ -199,12 +208,20 @@ double calculate_distance(char *city1, char *city2){
 	struct communities *node1 = hash[hash_val1];
 	struct communities *node2 = hash[hash_val2];
 	
-	while(strcmp(city1,node1->city.s)){
+	if(node1==NULL||node2==NULL){
+		return 0;
+	}
+	
+	while(node1!=NULL&&strcmp(city1,node1->city.s)){
 		node1 = node1->next;
 	}
 	
-	while(strcmp(city2,node2->city.s)){
+	while(node2!=NULL&&strcmp(city2,node2->city.s)){
 		node2 = node2->next;
+	}
+	
+	if(node1==NULL||node2==NULL){
+		return 0;
 	}
 	
 	double lat1 = node1->latidude;
@@ -233,24 +250,7 @@ double calculate_distance(char *city1, char *city2){
 	double H2 = (3*T+1)/(2*S);
 	
 	double dist = D*(1+f*H1*pow(sin(F),2)*pow(cos(G),2)-f*H2*pow(cos(F),2)*pow(sin(G),2));
-	
 	//----------------------
-	
-	//DEBUG OUTPUT
-	printf("f: %f\n",f);
-	printf("a: %f\n",a);
-	printf("F: %f\n",F);
-	printf("G: %f\n",G);
-	printf("l: %f\n",l);
-	printf("S: %f\n",S);
-	printf("C: %f\n",C);
-	printf("w: %f\n",w);
-	printf("T: %f\n",T);
-	printf("D: %f\n",D);
-	printf("H1: %f\n",H1);
-	printf("H2%f\n",H2);
-	
-	printf("distance: %f\n",dist);
 	
 	return dist;
 }
