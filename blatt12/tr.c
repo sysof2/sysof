@@ -41,11 +41,19 @@ int main(int argc, const char* argv[]){
 			for(char ch=reg1[i-1]+1;ch<reg1[i+1];ch++){
 				srclist[pos]=ch;
 				pos++;
+				if(pos>=256){
+					printf("incorrect arguments\n");
+					return 1;
+				}
 			}
 			
 		}else{
 			srclist[pos]=reg1[i];
 			pos++;
+			if(pos>=256){
+				printf("incorrect arguments\n");
+				return 1;
+			}
 		}
 	}
 	srclist[pos]=0;
@@ -61,11 +69,19 @@ int main(int argc, const char* argv[]){
 			for(char ch=reg2[i-1]+1;ch<reg2[i+1];ch++){
 				destlist[pos]=ch;
 				pos++;
+				if(pos>=256){
+					printf("incorrect arguments\n");
+					return 1;
+				}
 			}
 			
 		}else{
 			destlist[pos]=reg2[i];
 			pos++;
+			if(pos>=256){
+				printf("incorrect arguments\n");
+				return 1;
+			}
 		}
 	}
 	destlist[pos]=0;
